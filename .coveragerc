@@ -1,0 +1,9 @@
+[run]
+source = llvm_diagnostics/
+branch = True
+omit = .eggs/*
+       setup.py
+       test/*
+
+[xml]
+output = coverage-reports/coverage-llvm-diagnostics.xml
