@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright (c) 2021 - 2021 TomTom N.V.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,21 +20,21 @@ DIAGNOSTICS_HEADER = re.compile(
 )
 
 
-def diagnostics_messages_from_file(input: str):
-    f = open(input, "r")
-    for line in f:
-        _stripped = utils.strip_ansi_escape_chars(line)
-        _element = re.search(DIAGNOSTICS_HEADER, _stripped)
-        if _element:
-            _element = _element.group().strip(" ")
-            _file_path, _line_number, _column_number, _level, _message = _element.split(
-                ":", 4
-            )
+def diagnostics_messages_from_file(file_path: str):
+    with open(file_path, "r", encoding="UTF-8") as file_obj:
+        for line in file_obj:
+            _stripped = utils.strip_ansi_escape_chars(line)
+            _element = re.search(DIAGNOSTICS_HEADER, _stripped)
+            if _element:
+                _element = _element.group().strip(" ")
+                _file_path, _line_number, _column_number, _level, _message = _element.split(
+                    ":", 4
+                )
 
-            yield messages.DiagnosticsMessage(
-                file_path=_file_path,
-                line_number=int(_line_number),
-                column_number=int(_column_number),
-                message=_message.rstrip("\n").strip(" "),
-                level=messages.DiagnosticsLevel[_level.strip(" ").upper()],
-            )
+                yield messages.DiagnosticsMessage(
+                    file_path=_file_path,
+                    line_number=int(_line_number),
+                    column_number=int(_column_number),
+                    message=_message.rstrip("\n").strip(" "),
+                    level=messages.DiagnosticsLevel[_level.strip(" ").upper()],
+                )

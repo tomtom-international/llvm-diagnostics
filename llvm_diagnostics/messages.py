@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright (c) 2021 - 2021 TomTom N.V.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,35 +15,23 @@
 from enum import Enum
 import json
 from sys import stderr
+from typing import Optional
 
 from llvm_diagnostics import utils
 
 
-class TextFormat(Enum):
-    BOLD = 1
-
-    RED = 31
-    BLUE = 34
-    LIGHT_GREEN = 92
-    CYAN = 94
-
-
-def format_string(string: str, color: TextFormat):
-    return f"\033[{color.value}m{string}\033[0m"
-
-
 class DiagnosticsLevel(Enum):
-    ERROR = format_string("error", TextFormat.RED)
-    WARNING = format_string("warning", TextFormat.CYAN)
-    NOTE = format_string("note", TextFormat.BLUE)
+    ERROR = utils.format_string("error", utils.TextFormat.RED)
+    WARNING = utils.format_string("warning", utils.TextFormat.CYAN)
+    NOTE = utils.format_string("note", utils.TextFormat.BLUE)
 
 
 class DiagnosticsHint:
     def __init__(
         self,
         line: str,
-        mismatch: str = None,
-        expectation: str = None,
+        mismatch: Optional[str] = None,
+        expectation: Optional[str] = None,
     ):
         self.line = line.rstrip("\n") if line is not None else None
         self.mismatch = mismatch.rstrip("\n") if mismatch is not None else None
@@ -63,12 +49,12 @@ class DiagnosticsHint:
 
         self.__column_number = column_number
 
-    def to_string(self):
+    def __str__(self):
         _comp = None
 
         if self.mismatch is not None:
             _comp = self.line[
-                self.column_number - 1 : self.column_number + len(self.mismatch)
+                self.column_number - 1: self.column_number + len(self.mismatch)
             ]
 
             if _comp != self.mismatch:
@@ -81,9 +67,9 @@ class DiagnosticsHint:
             self.line
             + "\n"
             + (" " * (self.column_number - 1))
-            + format_string("^", TextFormat.LIGHT_GREEN)
+            + utils.format_string("^", utils.TextFormat.LIGHT_GREEN)
             + (
-                format_string("~" * (len(self.mismatch) - 1), TextFormat.LIGHT_GREEN)
+                utils.format_string("~" * (len(self.mismatch) - 1), utils.TextFormat.LIGHT_GREEN)
                 if _comp
                 else ""
             )
@@ -99,7 +85,7 @@ class DiagnosticsMessage:
         column_number: int,
         message: str,
         level: DiagnosticsLevel = DiagnosticsLevel.ERROR,
-        hint: DiagnosticsHint = None,
+        hint: Optional[DiagnosticsHint] = None,
     ):
         self.hint = hint
         if hint is not None:
@@ -185,16 +171,16 @@ class DiagnosticsMessage:
         self.__hint = hint
 
     def report(self):
-        print(self.to_string(), file=stderr)
+        print(self, file=stderr)
 
-    def to_string(self):
-        _string = format_string(
+    def __str__(self):
+        _string = utils.format_string(
             f"{self.file_path}:{self.line_number}:{self.column_number}: {self.level.value}: {self.message}",
-            TextFormat.BOLD,
+            utils.TextFormat.BOLD,
         )
 
         if self.hint:
-            _string += f"\n{self.hint.to_string()}"
+            _string += f"\n{self.hint}"
 
         return _string
 

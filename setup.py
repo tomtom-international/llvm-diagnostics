@@ -14,7 +14,7 @@
 
 from __future__ import print_function
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.rst') as file:
     long_description = file.read()
@@ -30,9 +30,7 @@ setup(
     keywords='diagnostics logger logging llvm',
     license='Apache License 2.0',
     license_files='LICENSE.txt',
-    packages=(
-        'llvm_diagnostics',
-    ),
+    packages=find_packages(),
     python_requires='>=3.5',
     setup_requires=(
         'setuptools_scm',

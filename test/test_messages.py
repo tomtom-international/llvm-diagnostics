@@ -13,7 +13,7 @@ mPercentage = 105\n\
               ^~~\n\
               100\
 """
-    _output = messages.DiagnosticsMessage(
+    _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
         line_number=10,
         column_number=15,
@@ -22,7 +22,7 @@ mPercentage = 105\n\
         hint=messages.DiagnosticsHint(
             line="mPercentage = 105", mismatch="105", expectation="100"
         ),
-    ).to_string()
+    ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
 
@@ -33,14 +33,14 @@ fake_file.py:10:15: error: Incorrect type assigned to mPercentage\n\
 mPercentage = \"105\"\n\
               ^~~~~\
 """
-    _output = messages.DiagnosticsMessage(
+    _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
         line_number=10,
         column_number=15,
         level=messages.DiagnosticsLevel.ERROR,
         message="Incorrect type assigned to mPercentage",
         hint=messages.DiagnosticsHint(line='mPercentage = "105"', mismatch='"105"'),
-    ).to_string()
+    ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
 
@@ -51,26 +51,26 @@ fake_file.py:10:1: note: mPercentage is deprecated and will be removed in 2030\n
 mPercentage = 105\n\
 ^\
 """
-    _output = messages.DiagnosticsMessage(
+    _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
         line_number=10,
         column_number=1,
         level=messages.DiagnosticsLevel.NOTE,
         message="mPercentage is deprecated and will be removed in 2030",
         hint=messages.DiagnosticsHint(line="mPercentage = 105"),
-    ).to_string()
+    ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
 
 
 def test_note_message_minimal():
     _expectation = "fake_file.py:1:1: note: Missing copyright information"
-    _output = messages.DiagnosticsMessage(
+    _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
         line_number=1,
         column_number=1,
         level=messages.DiagnosticsLevel.NOTE,
         message="Missing copyright information",
-    ).to_string()
+    ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
