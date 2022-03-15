@@ -15,19 +15,15 @@ jobs:
         fetch-depth: 0
 
     - name: Commisery
-      # You may pin to the exact commit or the version.
-      # uses: KevinDeJong-TomTom/commisery-action@27a4a7f50ec50552e5a488e48f68cd910b4d9443
       uses: KevinDeJong-TomTom/commisery-action@v0.1.2
       with:
-        # GitHub token used to access GitHub
         token: ${{ secrets.GITHUB_TOKEN }}
-        # Pull Request number
         pull_request: ${{ github.event.number }}
 
-    - name: Set up Python 3.7
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.9
 
     - name: Install dependencies
       run: |
@@ -38,9 +34,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov=. --cov-report=xml
-
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

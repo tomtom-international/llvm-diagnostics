@@ -15,9 +15,9 @@
 from __future__ import print_function
 
 from setuptools import setup, find_packages
+from pathlib import Path
 
-with open('README.rst') as file:
-    long_description = file.read()
+long_description = (Path(__file__).parent / "README.md").read_text()
 
 setup(
     name='llvm-diagnostics',
@@ -31,7 +31,7 @@ setup(
     license='Apache License 2.0',
     license_files='LICENSE.txt',
     packages=find_packages(),
-    python_requires='>=3.5',
+    python_requires='>=3.9',
     setup_requires=(
         'setuptools_scm',
         'setuptools_scm_git_archive',

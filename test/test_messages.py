@@ -1,6 +1,8 @@
+from cmath import exp
 import re
 
 from llvm_diagnostics import messages, utils
+from llvm_diagnostics.messages import DiagnosticsMessage, DiagnosticsRange, DiagnosticsLevel
 
 
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
@@ -13,15 +15,14 @@ mPercentage = 105\n\
               ^~~\n\
               100\
 """
-    _output = str(messages.DiagnosticsMessage(
+    _output = str(DiagnosticsMessage(
         file_path="fake_file.py",
-        line_number=10,
-        column_number=15,
-        level=messages.DiagnosticsLevel.WARNING,
+        line_number=DiagnosticsRange(start=10),
+        column_number=DiagnosticsRange(start=15, range=3),
+        line="mPercentage = 105",
+        expectations="100",
+        level=DiagnosticsLevel.WARNING,
         message="Value exceeds maximum, automatically capped to 100",
-        hint=messages.DiagnosticsHint(
-            line="mPercentage = 105", mismatch="105", expectation="100"
-        ),
     ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
@@ -35,12 +36,13 @@ mPercentage = \"105\"\n\
 """
     _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
-        line_number=10,
-        column_number=15,
+        line_number=DiagnosticsRange(start=10),
+        column_number=DiagnosticsRange(start=15, range=5),
+        line="mPercentage = \"105\"",
         level=messages.DiagnosticsLevel.ERROR,
         message="Incorrect type assigned to mPercentage",
-        hint=messages.DiagnosticsHint(line='mPercentage = "105"', mismatch='"105"'),
     ))
+    print (_output)
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
 
@@ -53,11 +55,11 @@ mPercentage = 105\n\
 """
     _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
-        line_number=10,
-        column_number=1,
+        line_number=DiagnosticsRange(start=10),
+        column_number=DiagnosticsRange(start=1),
+        line="mPercentage = 105",
         level=messages.DiagnosticsLevel.NOTE,
         message="mPercentage is deprecated and will be removed in 2030",
-        hint=messages.DiagnosticsHint(line="mPercentage = 105"),
     ))
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
@@ -67,8 +69,6 @@ def test_note_message_minimal():
     _expectation = "fake_file.py:1:1: note: Missing copyright information"
     _output = str(messages.DiagnosticsMessage(
         file_path="fake_file.py",
-        line_number=1,
-        column_number=1,
         level=messages.DiagnosticsLevel.NOTE,
         message="Missing copyright information",
     ))

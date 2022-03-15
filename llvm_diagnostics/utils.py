@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+"""Utilities"""
+
+from enum import Enum, auto
 import re
 
 _ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 
 class TextFormat(Enum):
+    """ANSI Code text formatting"""
+
     BOLD = 1
 
     RED = 31
@@ -28,8 +32,18 @@ class TextFormat(Enum):
 
 
 def format_string(string: str, color: TextFormat):
+    """Applies ANSI code formatting to string"""
     return f"\033[{color.value}m{string}\033[0m"
 
 
 def strip_ansi_escape_chars(string: str):
+    """Removes all ANSI code characters from string"""
     return _ANSI_ESCAPE.sub("", string)
+
+
+class DiagnosticsLevel(Enum):
+    """Diagnostics Level"""
+
+    ERROR = auto()
+    WARNING = auto()
+    NOTE = auto()

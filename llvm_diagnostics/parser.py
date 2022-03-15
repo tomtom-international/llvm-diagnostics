@@ -12,8 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Logging parser"""
+
+import os
 import re
-from llvm_diagnostics import messages, utils
+from llvm_diagnostics import utils
+from llvm_diagnostics.messages import (
+    DiagnosticsMessage,
+    DiagnosticsRange,
+    DiagnosticsLevel,
+)
 
 DIAGNOSTICS_HEADER = re.compile(
     r"[a-zA-Z\.\_\/\0-9]+:[0-9]+:[0-9]+:\ (?:error|warning|note): .*"
@@ -21,20 +29,25 @@ DIAGNOSTICS_HEADER = re.compile(
 
 
 def diagnostics_messages_from_file(file_path: str):
+    """Returns Diagnostic Messages derived from the provided logging file"""
     with open(file_path, "r", encoding="UTF-8") as file_obj:
         for line in file_obj:
             _stripped = utils.strip_ansi_escape_chars(line)
             _element = re.search(DIAGNOSTICS_HEADER, _stripped)
             if _element:
                 _element = _element.group().strip(" ")
-                _file_path, _line_number, _column_number, _level, _message = _element.split(
-                    ":", 4
-                )
+                (
+                    _file_path,
+                    _line_number,
+                    _column_number,
+                    _level,
+                    _message,
+                ) = _element.split(":", 4)
 
-                yield messages.DiagnosticsMessage(
+                yield DiagnosticsMessage(
                     file_path=_file_path,
-                    line_number=int(_line_number),
-                    column_number=int(_column_number),
-                    message=_message.rstrip("\n").strip(" "),
-                    level=messages.DiagnosticsLevel[_level.strip(" ").upper()],
+                    line_number=DiagnosticsRange(start=int(_line_number)),
+                    column_number=DiagnosticsRange(start=int(_column_number)),
+                    message=_message.rstrip(os.linesep).strip(" "),
+                    level=DiagnosticsLevel[_level.strip(" ").upper()],
                 )
