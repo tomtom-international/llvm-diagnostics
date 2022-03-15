@@ -17,19 +17,15 @@ from __future__ import print_function
 from setuptools import setup, find_packages
 from pathlib import Path
 
-long_description = (Path(__file__).parent / "README.md").read_text()
-
 setup(
     name='llvm-diagnostics',
     description='Python Logger using LLVM Diagnostics specifications',
-    long_description=long_description,
     download_url='https://github.com/KevinDeJong-TomTom/llvm-diagnostics',
     url='https://github.com/KevinDeJong-TomTom/llvm-diagnostics',
     author='Kevin de Jong',
     author_email='KevinDeJong@tomtom.com',
     keywords='diagnostics logger logging llvm',
     license='Apache License 2.0',
-    license_files='LICENSE.txt',
     packages=find_packages(),
     python_requires='>=3.9',
     setup_requires=(
