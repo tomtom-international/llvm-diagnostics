@@ -20,6 +20,8 @@ from typing import Any, Protocol
 from llvm_diagnostics import utils
 from llvm_diagnostics.utils import DiagnosticsLevel
 
+# pylint: disable=R0903
+
 
 class DiagnosticsFormatter(Protocol):
     """Protocol Formatter class"""
@@ -33,15 +35,29 @@ class LlvmFormatter(DiagnosticsFormatter):
     """LLVM Diagnostics Formatter"""
 
     LEVEL_FORMAT = {
-        DiagnosticsLevel.ERROR: utils.format_string("error", utils.TextFormat.RED),
-        DiagnosticsLevel.WARNING: utils.format_string("warning", utils.TextFormat.RED),
-        DiagnosticsLevel.NOTE: utils.format_string("note", utils.TextFormat.RED),
+        DiagnosticsLevel.ERROR: utils.format_string(
+            "error", utils.TextFormat.RED,
+        ),
+        DiagnosticsLevel.WARNING: utils.format_string(
+            "warning", utils.TextFormat.CYAN,
+        ),
+        DiagnosticsLevel.NOTE: utils.format_string(
+            "note", utils.TextFormat.LIGHT_GREEN,
+        ),
     }
 
     def format(self, message: Any) -> str:
-        """Formats the Diagnostics message into a LLVM Diagnostics compatible format"""
+        """Formats the message into a LLVM Diagnostics compatible format"""
+
+        _message = ""
+        if message.file_path:
+            _message = (
+                f"{message.file_path}:{message.line_number.start}:"
+                f"{message.column_number.start}: "
+              )
+
         _message = utils.format_string(
-            f"{message.file_path}:{message.line_number.start}:{message.column_number.start}: {self.LEVEL_FORMAT[message.level]}: {message.message}",
+            f"{_message}{self.LEVEL_FORMAT[message.level]}: {message.message}",
             utils.TextFormat.BOLD,
         )
 
@@ -57,7 +73,8 @@ class LlvmFormatter(DiagnosticsFormatter):
 
         if message.column_number.range:
             _indicator += utils.format_string(
-                "~" * (message.column_number.range - 1), utils.TextFormat.LIGHT_GREEN
+                "~" * (message.column_number.range - 1),
+                utils.TextFormat.LIGHT_GREEN,
             )
 
         if message.expectations:
@@ -80,9 +97,12 @@ class GitHubFormatter(DiagnosticsFormatter):
     }
 
     def format(self, message: Any) -> str:
-        """Formats the Diagnostics message into a GitHub compatible Workflow command"""
+        """Formats the message into a GitHub compatible Workflow command"""
 
-        _message = f"::{self.LEVEL_FORMAT[message.level]} file={message.file_path}"
+        _message = f"::{self.LEVEL_FORMAT[message.level]}"
+
+        if message.file_path:
+            _message += f" file={message.file_path}"
 
         if not message.line:
             return _message
@@ -90,12 +110,12 @@ class GitHubFormatter(DiagnosticsFormatter):
         _message += f",line={message.line_number.start}"
         if message.line_number.range:
             _message += (
-                f",endLine={message.line_number.start + message.line_number.range}"
+                f",endLine={message.line_number.end()}"
             )
 
         _message += f",col={message.column_number.start}"
         if message.column_number.range:
-            _message += f",endColumn={message.column_number.start + message.column_number.range}"
+            _message += f",endColumn={message.column_number.end()}"
 
         _message += f"::{message.message}"
 

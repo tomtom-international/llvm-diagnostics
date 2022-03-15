@@ -17,8 +17,10 @@
 import os
 import re
 from llvm_diagnostics import utils
-from llvm_diagnostics.messages import (
-    DiagnosticsMessage,
+from llvm_diagnostics import (
+    DiagnosticsInfo,
+    DiagnosticsWarning,
+    DiagnosticsError,
     DiagnosticsRange,
     DiagnosticsLevel,
 )
@@ -44,10 +46,18 @@ def diagnostics_messages_from_file(file_path: str):
                     _message,
                 ) = _element.split(":", 4)
 
-                yield DiagnosticsMessage(
+                level = DiagnosticsLevel[_level.strip(" ").upper()]
+
+                _message_class_type = DiagnosticsInfo
+
+                if level == DiagnosticsLevel.ERROR:
+                    _message_class_type = DiagnosticsError
+                elif level == DiagnosticsLevel.WARNING:
+                    _message_class_type = DiagnosticsWarning
+
+                yield _message_class_type(
                     file_path=_file_path,
                     line_number=DiagnosticsRange(start=int(_line_number)),
                     column_number=DiagnosticsRange(start=int(_column_number)),
                     message=_message.rstrip(os.linesep).strip(" "),
-                    level=DiagnosticsLevel[_level.strip(" ").upper()],
                 )

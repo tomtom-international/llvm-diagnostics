@@ -15,11 +15,10 @@
 """Diagnostic Messages"""
 
 from dataclasses import dataclass
-import json
 from sys import stderr
 from typing import Optional
-
 from llvm_diagnostics.utils import DiagnosticsLevel
+
 from llvm_diagnostics.formatters import LlvmFormatter, DiagnosticsFormatter
 
 
@@ -30,19 +29,22 @@ class DiagnosticsRange:
     start: int = 1
     range: Optional[int] = None
 
+    def end(self):
+        """Returns the last index of the Range"""
+        return self.start + self.range
+
 
 @dataclass
-class DiagnosticsMessage:
+class __DiagnosticsMessage(Exception):  # pylint: disable=C0103
     """Diagnostics Message"""
 
-    file_path: str
     message: str
+    file_path: Optional[str] = None
     column_number: DiagnosticsRange = DiagnosticsRange()
     expectations: Optional[str] = None
     line: Optional[str] = None
     line_number: DiagnosticsRange = DiagnosticsRange()
     formatter: DiagnosticsFormatter = LlvmFormatter()
-    level: DiagnosticsLevel = DiagnosticsLevel.ERROR
 
     def report(self):
         """Formats the Diagnostics message and sends it to `stderr`"""
@@ -52,14 +54,23 @@ class DiagnosticsMessage:
         """Formats the Diagnostics message"""
         return self.formatter.format(message=self)
 
-    def to_json(self):
-        """Converts the Diagnostics Message to simply JSON format"""
-        return json.dumps(
-            {
-                "filepath": self.file_path,
-                "line": self.line_number.start,
-                "column": self.column_number.start,
-                "level": DiagnosticsLevel(self.level).name.lower(),
-                "message": self.message,
-            }
-        )
+
+@dataclass
+class DiagnosticsInfo(__DiagnosticsMessage):
+    """Diagnostics Information"""
+
+    level: DiagnosticsLevel = DiagnosticsLevel.NOTE
+
+
+@dataclass
+class DiagnosticsError(__DiagnosticsMessage):
+    """Diagnostics Error"""
+
+    level: DiagnosticsLevel = DiagnosticsLevel.ERROR
+
+
+@dataclass
+class DiagnosticsWarning(__DiagnosticsMessage):
+    """Diagnostics Warning"""
+
+    level: DiagnosticsLevel = DiagnosticsLevel.WARNING
