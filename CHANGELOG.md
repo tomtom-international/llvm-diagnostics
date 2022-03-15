@@ -15,6 +15,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2022-03-15
+### Removed
+- Removed the `to_json()` method as it was only used for validation
+
+### Added
+- New classes representing the message type (`DiagnosticsError`, `DiagnosticsWarning`, `DiagnosticsInfo`)
+
+### Changed
+- Allow creation of a diagnostics message without `file_path`
+
 ## [1.0.0] - 2022-03-15
 ### Removed
 - Both `line_number` and `column_number` properties have been reworked
