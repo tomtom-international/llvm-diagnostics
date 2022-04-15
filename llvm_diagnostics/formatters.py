@@ -104,18 +104,16 @@ class GitHubFormatter(DiagnosticsFormatter):
         if message.file_path:
             _message += f" file={message.file_path}"
 
-        if not message.line:
-            return _message
+        if message.line:
+            _message += f",line={message.line_number.start}"
+            if message.line_number.range:
+                _message += (
+                    f",endLine={message.line_number.end()}"
+                )
 
-        _message += f",line={message.line_number.start}"
-        if message.line_number.range:
-            _message += (
-                f",endLine={message.line_number.end()}"
-            )
-
-        _message += f",col={message.column_number.start}"
-        if message.column_number.range:
-            _message += f",endColumn={message.column_number.end()}"
+            _message += f",col={message.column_number.start}"
+            if message.column_number.range:
+                _message += f",endColumn={message.column_number.end()}"
 
         _message += f"::{message.message}"
 
