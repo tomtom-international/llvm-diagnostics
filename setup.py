@@ -27,7 +27,10 @@ setup(
     keywords='diagnostics logger logging llvm',
     license='Apache License 2.0',
     packages=find_packages(),
-    python_requires='>=3.9',
+    python_requires='>=3.7',
+    install_requires=(
+        "typing-extensions>=4.2.0,<5",
+    ),
     setup_requires=(
         'setuptools_scm',
         'setuptools_scm_git_archive',

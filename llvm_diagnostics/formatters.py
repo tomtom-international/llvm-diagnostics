@@ -15,7 +15,13 @@
 """Diagnostic Message Formatters"""
 
 import os
-from typing import Any, Protocol
+import sys
+
+from typing import Any
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 from llvm_diagnostics import utils
 from llvm_diagnostics.utils import DiagnosticsLevel
