@@ -40,15 +40,12 @@ You can use `llvm-diagnostics` to create your own Diagnostics messages.
 ### Reporting a message in LLVM Diagnostics format
 
 ```python
-from llvm_diagnostics import (
-   DiagnosticsWarning,
-   DiagnosticsRange,
-)
+import llvm_diagnostics as logger
 
-message = DiagnosticsWarning(
+message = logger.Warning(
    file_path='fake_file.py',
-   line_number=DiagnosticsRange(start=10),
-   column_number=DiagnosticsRange(start=15, range=3),
+   line_number=logger.Range(start=10),
+   column_number=logger.Range(start=15, range=3),
    line="mPercentage = 105",
    expectations="100",
    message='Value exceeds maximum, automatically capped to 100',
@@ -61,20 +58,17 @@ This will result in the following message on `stderr`:
 ### Reporting a message in GitHub format
 
 ```python
-from llvm_diagnostics import (
-   DiagnosticsWarning,
-   DiagnosticsRange,
-)
-from llvm_diagnostics.formatters import GitHubFormatter
+import llvm_diagnostics as logger
 
-message = DiagnosticsWarning(
+logger.config(logger.formatters.GitHub())
+
+message = logger.Warning(
    file_path='fake_file.py',
-   line_number=DiagnosticsRange(start=10),
-   column_number=DiagnosticsRange(start=15, range=3),
+   line_number=logger.Range(start=10),
+   column_number=logger.Range(start=15, range=3),
    line="mPercentage = 105",
    expectations="100",
    message='Value exceeds maximum, automatically capped to 100',
-   formatter=GitHubFormatter(),
 ).report()
 ```
 

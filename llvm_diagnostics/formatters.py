@@ -21,7 +21,7 @@ import sys
 from typing import Any
 
 from llvm_diagnostics import utils
-from llvm_diagnostics.utils import DiagnosticsLevel
+from llvm_diagnostics.utils import Level
 
 if sys.version_info >= (3, 8):
     from typing import Protocol
@@ -39,19 +39,19 @@ class DiagnosticsFormatter(Protocol):
         """Protocol method"""
 
 
-class LlvmFormatter(DiagnosticsFormatter):
+class Llvm(DiagnosticsFormatter):
     """LLVM Diagnostics Formatter"""
 
     LEVEL_FORMAT = {
-        DiagnosticsLevel.ERROR: utils.format_string(
+        Level.ERROR: utils.format_string(
             "error",
             utils.TextFormat.RED,
         ),
-        DiagnosticsLevel.WARNING: utils.format_string(
+        Level.WARNING: utils.format_string(
             "warning",
             utils.TextFormat.CYAN,
         ),
-        DiagnosticsLevel.NOTE: utils.format_string(
+        Level.NOTE: utils.format_string(
             "note",
             utils.TextFormat.LIGHT_GREEN,
         ),
@@ -104,13 +104,13 @@ class LlvmFormatter(DiagnosticsFormatter):
         return _message + os.linesep + _indicator
 
 
-class GitHubFormatter(DiagnosticsFormatter):
+class GitHub(DiagnosticsFormatter):
     """GitHub Formatter"""
 
     LEVEL_FORMAT = {
-        DiagnosticsLevel.ERROR: "error",
-        DiagnosticsLevel.WARNING: "warning",
-        DiagnosticsLevel.NOTE: "notice",
+        Level.ERROR: "error",
+        Level.WARNING: "warning",
+        Level.NOTE: "notice",
     }
 
     def format(self, message: Any) -> str:
@@ -133,3 +133,19 @@ class GitHubFormatter(DiagnosticsFormatter):
         _message += f"::{message.message}"
 
         return _message
+
+
+# Global configuration for handling message formatting
+__GLOBAL_FORMATTER = Llvm()
+
+
+def config(formatter: DiagnosticsFormatter):
+    """Configure the formatter used"""
+    global __GLOBAL_FORMATTER  # pylint: disable=W0603
+    __GLOBAL_FORMATTER = formatter
+
+
+def get_config():
+    """Retrieve configured formatter"""
+    global __GLOBAL_FORMATTER  # pylint: disable=W0602,W0603
+    return __GLOBAL_FORMATTER

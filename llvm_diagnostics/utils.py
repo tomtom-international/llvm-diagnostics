@@ -41,7 +41,7 @@ def strip_ansi_escape_chars(string: str):
     return _ANSI_ESCAPE.sub("", string)
 
 
-class DiagnosticsLevel(Enum):
+class Level(Enum):
     """Diagnostics Level"""
 
     ERROR = auto()

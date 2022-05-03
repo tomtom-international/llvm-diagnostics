@@ -17,13 +17,13 @@
 from dataclasses import dataclass
 from sys import stderr
 from typing import Optional
-from llvm_diagnostics.utils import DiagnosticsLevel
+from llvm_diagnostics.utils import Level
 
-from llvm_diagnostics.formatters import LlvmFormatter, DiagnosticsFormatter
+from llvm_diagnostics import formatters
 
 
 @dataclass
-class DiagnosticsRange:
+class Range:
     """Diagnostics Range"""
 
     start: int = 1
@@ -35,16 +35,15 @@ class DiagnosticsRange:
 
 
 @dataclass
-class __DiagnosticsMessage(Exception):  # pylint: disable=C0103
+class __Message(Exception):  # pylint: disable=C0103
     """Diagnostics Message"""
 
     message: str
     file_path: Optional[str] = None
-    column_number: DiagnosticsRange = DiagnosticsRange()
+    column_number: Range = Range()
     expectations: Optional[str] = None
     line: Optional[str] = None
-    line_number: DiagnosticsRange = DiagnosticsRange()
-    formatter: DiagnosticsFormatter = LlvmFormatter()
+    line_number: Range = Range()
 
     def report(self):
         """Formats the Diagnostics message and sends it to `stderr`"""
@@ -52,25 +51,25 @@ class __DiagnosticsMessage(Exception):  # pylint: disable=C0103
 
     def __str__(self):
         """Formats the Diagnostics message"""
-        return self.formatter.format(message=self)
+        return formatters.get_config().format(message=self)
 
 
 @dataclass
-class DiagnosticsInfo(__DiagnosticsMessage):
+class Info(__Message):
     """Diagnostics Information"""
 
-    level: DiagnosticsLevel = DiagnosticsLevel.NOTE
+    level: Level = Level.NOTE
 
 
 @dataclass
-class DiagnosticsError(__DiagnosticsMessage):
+class Error(__Message):
     """Diagnostics Error"""
 
-    level: DiagnosticsLevel = DiagnosticsLevel.ERROR
+    level: Level = Level.ERROR
 
 
 @dataclass
-class DiagnosticsWarning(__DiagnosticsMessage):
+class Warning(__Message):  # pylint: disable=W0622
     """Diagnostics Warning"""
 
-    level: DiagnosticsLevel = DiagnosticsLevel.WARNING
+    level: Level = Level.WARNING

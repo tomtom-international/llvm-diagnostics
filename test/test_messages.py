@@ -1,7 +1,21 @@
+# Copyright (c) 2021 - 2022 TomTom N.V.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.import re
+
 import re
 
 from llvm_diagnostics import utils
-from llvm_diagnostics import DiagnosticsError, DiagnosticsInfo, DiagnosticsRange, DiagnosticsLevel
+import llvm_diagnostics
 
 
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
@@ -14,13 +28,13 @@ mPercentage = 105\n\
               ^~~\n\
               100\
 """
-    _output = str(DiagnosticsError(
+    _output = str(llvm_diagnostics.Error(
         file_path="fake_file.py",
-        line_number=DiagnosticsRange(start=10),
-        column_number=DiagnosticsRange(start=15, range=3),
+        line_number=llvm_diagnostics.Range(start=10),
+        column_number=llvm_diagnostics.Range(start=15, range=3),
         line="mPercentage = 105",
         expectations="100",
-        level=DiagnosticsLevel.WARNING,
+        level=llvm_diagnostics.Level.WARNING,
         message="Value exceeds maximum, automatically capped to 100",
     ))
 
@@ -33,10 +47,10 @@ fake_file.py:10:15: error: Incorrect type assigned to mPercentage\n\
 mPercentage = \"105\"\n\
               ^~~~~\
 """
-    _output = str(DiagnosticsError(
+    _output = str(llvm_diagnostics.Error(
         file_path="fake_file.py",
-        line_number=DiagnosticsRange(start=10),
-        column_number=DiagnosticsRange(start=15, range=5),
+        line_number=llvm_diagnostics.Range(start=10),
+        column_number=llvm_diagnostics.Range(start=15, range=5),
         line="mPercentage = \"105\"",
         message="Incorrect type assigned to mPercentage",
     ))
@@ -50,10 +64,10 @@ fake_file.py:10:1: note: mPercentage is deprecated and will be removed in 2030\n
 mPercentage = 105\n\
 ^\
 """
-    _output = str(DiagnosticsInfo(
+    _output = str(llvm_diagnostics.Info(
         file_path="fake_file.py",
-        line_number=DiagnosticsRange(start=10),
-        column_number=DiagnosticsRange(start=1),
+        line_number=llvm_diagnostics.Range(start=10),
+        column_number=llvm_diagnostics.Range(start=1),
         line="mPercentage = 105",
         message="mPercentage is deprecated and will be removed in 2030",
     ))
@@ -63,7 +77,7 @@ mPercentage = 105\n\
 
 def test_note_message_minimal():
     _expectation = "fake_file.py:1:1: note: Missing copyright information"
-    _output = str(DiagnosticsInfo(
+    _output = str(llvm_diagnostics.Info(
         file_path="fake_file.py",
         message="Missing copyright information",
     ))

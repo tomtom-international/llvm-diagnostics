@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-
 from llvm_diagnostics import parser
 import llvm_diagnostics
 
@@ -23,7 +21,7 @@ import llvm_diagnostics
 def _check_expectations_vs_file(file, expectations):
     index = 0
     for item in parser.diagnostics_messages_from_file(file):
-        assert isinstance(item, llvm_diagnostics.messages.__DiagnosticsMessage)
+        assert isinstance(item, llvm_diagnostics.messages.__Message)
         assert item.file_path == expectations[index].get("filepath")
         assert item.line_number.start == expectations[index].get("line")
         assert item.column_number.start == expectations[index].get("column")

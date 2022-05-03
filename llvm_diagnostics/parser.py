@@ -16,14 +16,8 @@
 
 import os
 import re
+import llvm_diagnostics
 from llvm_diagnostics import utils
-from llvm_diagnostics import (
-    DiagnosticsInfo,
-    DiagnosticsWarning,
-    DiagnosticsError,
-    DiagnosticsRange,
-    DiagnosticsLevel,
-)
 
 DIAGNOSTICS_HEADER = re.compile(
     r"[a-zA-Z\.\_\/\0-9]+:[0-9]+:[0-9]+:\ (?:error|warning|note): .*"
@@ -46,18 +40,18 @@ def diagnostics_messages_from_file(file_path: str):
                     _message,
                 ) = _element.split(":", 4)
 
-                level = DiagnosticsLevel[_level.strip(" ").upper()]
+                level = llvm_diagnostics.Level[_level.strip(" ").upper()]
 
-                _message_class_type = DiagnosticsInfo
+                _message_class_type = llvm_diagnostics.Info
 
-                if level == DiagnosticsLevel.ERROR:
-                    _message_class_type = DiagnosticsError
-                elif level == DiagnosticsLevel.WARNING:
-                    _message_class_type = DiagnosticsWarning
+                if level == llvm_diagnostics.Level.ERROR:
+                    _message_class_type = llvm_diagnostics.Error
+                elif level == llvm_diagnostics.Level.WARNING:
+                    _message_class_type = llvm_diagnostics.Warning
 
                 yield _message_class_type(
                     file_path=_file_path,
-                    line_number=DiagnosticsRange(start=int(_line_number)),
-                    column_number=DiagnosticsRange(start=int(_column_number)),
+                    line_number=llvm_diagnostics.Range(int(_line_number)),
+                    column_number=llvm_diagnostics.Range(int(_column_number)),
                     message=_message.rstrip(os.linesep).strip(" "),
                 )

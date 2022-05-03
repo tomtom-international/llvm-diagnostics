@@ -13,19 +13,18 @@
 # limitations under the License.
 
 # flake8: noqa
+# pylint: disable=W0622
 
 """Init"""
 
+from llvm_diagnostics import formatters
+
 from llvm_diagnostics.messages import (
-    DiagnosticsInfo,
-    DiagnosticsWarning,
-    DiagnosticsError,
-    DiagnosticsRange,
+    Info,
+    Warning,
+    Error,
+    Range,
 )
 
-from llvm_diagnostics.utils import DiagnosticsLevel
-
-from llvm_diagnostics.formatters import (
-    GitHubFormatter,
-    LlvmFormatter,
-)
+from llvm_diagnostics.utils import Level
+from llvm_diagnostics.formatters import config
