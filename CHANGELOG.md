@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Renamed internal classes (removed superfluous `Diagnostics`-prefix)
 
-## Added
+### Added
 - Ability to configure the formatting using a global configuration method (`llvm_diagnostics.config(...)`)
 
 ## [2.1.2] - 2022-05-03
