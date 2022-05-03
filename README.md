@@ -24,7 +24,7 @@ for error in list(diagnostics_messages_from_file("test/resources/test.out")):
    print(f"  Message: {error.message}")
 ```
 
-Which fill result in output similar to:
+Which will result in output similar to:
 
 ```sh
 Diagnostics Message found:

@@ -15,17 +15,29 @@
 from __future__ import print_function
 
 from setuptools import setup, find_packages
-from pathlib import Path
+import re
+
+with open('README.md', encoding='UTF-8') as fh:
+    long_description = fh.read()
+
+# Extract first paragraph
+description = re.sub(r'^\s*(?:#+[^\n]*\s*)*', r'', long_description, count=1, flags=re.DOTALL|re.MULTILINE)
+description = re.sub(r'\n\n.*', r'', description, flags=re.DOTALL|re.MULTILINE)
+# Eliminate link annotation
+description = re.sub(r'\[([^\]]+)\]', r'\1', description)
+# Convert line breaks into spaces
+description = description.replace('\n', ' ')
 
 setup(
     name='llvm-diagnostics',
-    description='Python Logger using LLVM Diagnostics specifications',
+    description=description,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     download_url='https://github.com/KevinDeJong-TomTom/llvm-diagnostics',
     url='https://github.com/KevinDeJong-TomTom/llvm-diagnostics',
     author='Kevin de Jong',
     author_email='KevinDeJong@tomtom.com',
     keywords='diagnostics logger logging llvm',
-    license='Apache License 2.0',
     packages=find_packages(),
     python_requires='>=3.7',
     install_requires=(
@@ -37,4 +49,9 @@ setup(
     ),
     use_scm_version={"relative_to": __file__},
     zip_safe=True,
+    license='Apache License 2.0',
+    license_file='LICENSE.md',
+    classifiers=(
+      'License :: OSI Approved :: Apache Software License',
+    ),
 )
