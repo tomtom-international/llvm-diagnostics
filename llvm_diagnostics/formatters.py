@@ -14,18 +14,20 @@
 
 """Diagnostic Message Formatters"""
 
+
 import os
 import sys
 
 from typing import Any
+
+from llvm_diagnostics import utils
+from llvm_diagnostics.utils import DiagnosticsLevel
 
 if sys.version_info >= (3, 8):
     from typing import Protocol
 else:
     from typing_extensions import Protocol
 
-from llvm_diagnostics import utils
-from llvm_diagnostics.utils import DiagnosticsLevel
 
 # pylint: disable=R0903
 
@@ -35,7 +37,6 @@ class DiagnosticsFormatter(Protocol):
 
     def format(self, message: Any) -> str:
         """Protocol method"""
-        ...
 
 
 class LlvmFormatter(DiagnosticsFormatter):
