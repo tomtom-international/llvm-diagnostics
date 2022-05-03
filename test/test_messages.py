@@ -40,7 +40,6 @@ mPercentage = \"105\"\n\
         line="mPercentage = \"105\"",
         message="Incorrect type assigned to mPercentage",
     ))
-    print (_output)
 
     assert utils.strip_ansi_escape_chars(_output) == _expectation
 

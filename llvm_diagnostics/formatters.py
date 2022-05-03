@@ -18,6 +18,7 @@ import os
 import sys
 
 from typing import Any
+
 if sys.version_info >= (3, 8):
     from typing import Protocol
 else:
@@ -42,13 +43,16 @@ class LlvmFormatter(DiagnosticsFormatter):
 
     LEVEL_FORMAT = {
         DiagnosticsLevel.ERROR: utils.format_string(
-            "error", utils.TextFormat.RED,
+            "error",
+            utils.TextFormat.RED,
         ),
         DiagnosticsLevel.WARNING: utils.format_string(
-            "warning", utils.TextFormat.CYAN,
+            "warning",
+            utils.TextFormat.CYAN,
         ),
         DiagnosticsLevel.NOTE: utils.format_string(
-            "note", utils.TextFormat.LIGHT_GREEN,
+            "note",
+            utils.TextFormat.LIGHT_GREEN,
         ),
     }
 
@@ -60,7 +64,7 @@ class LlvmFormatter(DiagnosticsFormatter):
             _message = (
                 f"{message.file_path}:{message.line_number.start}:"
                 f"{message.column_number.start}: "
-              )
+            )
 
         _message = utils.format_string(
             f"{_message}{self.LEVEL_FORMAT[message.level]}: {message.message}",
@@ -70,17 +74,23 @@ class LlvmFormatter(DiagnosticsFormatter):
         if not message.line:
             return _message
 
+        indicator_color = (
+            utils.TextFormat.LIGHT_GREEN
+            if message.expectations
+            else utils.TextFormat.RED
+        )
+
         _indicator = (
             message.line.rstrip(os.linesep)
             + os.linesep
             + " " * (message.column_number.start - 1)
-            + utils.format_string("^", utils.TextFormat.LIGHT_GREEN)
+            + utils.format_string("^", indicator_color)
         )
 
         if message.column_number.range:
             _indicator += utils.format_string(
                 "~" * (message.column_number.range - 1),
-                utils.TextFormat.LIGHT_GREEN,
+                indicator_color,
             )
 
         if message.expectations:
@@ -113,9 +123,7 @@ class GitHubFormatter(DiagnosticsFormatter):
         if message.line:
             _message += f",line={message.line_number.start}"
             if message.line_number.range:
-                _message += (
-                    f",endLine={message.line_number.end()}"
-                )
+                _message += f",endLine={message.line_number.end()}"
 
             _message += f",col={message.column_number.start}"
             if message.column_number.range:
