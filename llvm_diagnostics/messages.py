@@ -33,6 +33,9 @@ class Range:
         """Returns the last index of the Range"""
         return self.start + self.range
 
+    def __hash__(self):
+        return hash((self.start, self.range))
+
 
 @dataclass
 class __Message(Exception):  # pylint: disable=C0103
